@@ -5,10 +5,10 @@ public class MainClassTest {
     MainClass newMainClass = new MainClass();
 
     @Test
-    public void testGetClassNumber()
+    public void testGetClassString()
     {
-        int actual = newMainClass.getClassNumber();
-        int expected = 45;
-        Assert.assertTrue("getClassNumber method invoke result is equal or lower than " + expected, actual > expected);
+        boolean helloWithUpperH = newMainClass.getClassString().contains("Hello");
+        boolean helloWithLowerH = newMainClass.getClassString().contains("hello");
+        Assert.assertTrue("There is no Hello or hello substring in getClassString invoke result", helloWithUpperH || helloWithLowerH);
     }
 }
