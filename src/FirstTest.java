@@ -5,13 +5,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
     private AppiumDriver driver;
@@ -38,24 +38,44 @@ public class FirstTest {
     }
 
     @Test
-    public void testSearchFieldPlaceholderTextComparition() {
+    public void testSearchCancellation() {
+        int expectedElementsCount = 1;
+        String textToSearch = "Java";
+
         WaitForElementAndClick(
                 By.id("org.wikipedia:id/search_container"),
                 "No element with org.wikipedia:id/search_container id found or unable to click",
                 5
         );
 
-        WebElement search_text_element = WaitForElementPresent(
+        WaitForElementAndSendKeys(
                 By.id("org.wikipedia:id/search_src_text"),
-                "No element with org.wikipedia:id/search_src_text id found"
+                "Can not find or send keys to element with org.wikipedia:id/search_src_text id or sendKeys " + textToSearch,
+                5,
+                textToSearch
         );
 
-        String element_text = search_text_element.getAttribute("text");
+        int elements_count = WaitForElementsPresentAndCount(
+                By.id("org.wikipedia:id/page_list_item_container"),
+                "Can not count list of elements with org.wikipedia:id/page_list_item_container id",
+                5
+        );
 
-        Assert.assertEquals(
-                "Unexpected search field placeholder",
-                "Search…",
-                element_text
+        Assert.assertTrue(
+                "Elements count is " + expectedElementsCount + " or smaller",
+                elements_count > expectedElementsCount
+        );
+
+        WaitForElementAndClick(
+                By.id("org.wikipedia:id/search_close_btn"),
+                "No element with org.wikipedia:id/search_close_btn id found or unable to click",
+                0
+        );
+
+        WaitForElementNotPresent(
+                By.id("org.wikipedia:id/page_list_item_container"),
+                "Element with id org.wikipedia:id/page_list_item_container still present on screen",
+                5
         );
     }
 
@@ -75,5 +95,29 @@ public class FirstTest {
         WebElement element = WaitForElementPresent(by, error_message, timeoutInSeconds);
         element.click();
         return element;
+    }
+
+    private WebElement WaitForElementAndSendKeys(By by, String error_message, long timeoutInSeconds, String textToSend)
+    {
+        WebElement element = WaitForElementPresent(by, error_message, timeoutInSeconds);
+        element.sendKeys(textToSend);
+        return element;
+    }
+
+    private int WaitForElementsPresentAndCount(By by, String error_message, long timeoutInSeconds)
+    {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        List elements = driver.findElements(by);
+        return elements.size();
+
+    }
+
+    private boolean WaitForElementNotPresent(By by, String error_message, long timeoutInSeconds){
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        return wait.until(
+                ExpectedConditions.invisibilityOfElementLocated(by)
+        );
     }
 }
