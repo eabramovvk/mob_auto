@@ -79,6 +79,41 @@ public class FirstTest {
         );
     }
 
+    @Test
+    public void testSearchResultsTitlesCheck()
+    {
+        String textToSearch = "Java";
+
+        WaitForElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "No element with org.wikipedia:id/search_container id found or unable to click",
+                5
+        );
+
+        WaitForElementAndSendKeys(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Can not find or send keys to element with org.wikipedia:id/search_src_text id or sendKeys " + textToSearch,
+                5,
+                textToSearch
+        );
+
+        WaitForElementPresent(
+                By.id("org.wikipedia:id/page_list_item_title"),
+                "No element with org.wikipedia:id/page_list_item_title id found",
+                5
+        );
+
+        List<WebElement> elementsList = driver.findElements(By.id("org.wikipedia:id/page_list_item_title"));
+        int elementsListLength = elementsList.size();
+
+        for (int i = 0; i < elementsListLength; i++)
+        {
+            WebElement elementsListInstance = elementsList.get(i);
+            String elementTitle = elementsListInstance.getText();
+            Assert.assertTrue("One element title or more does not contains " + textToSearch, elementTitle.toLowerCase().contains(textToSearch.toLowerCase()));
+        }
+    }
+
     private WebElement WaitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message + "\n");
