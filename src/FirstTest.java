@@ -114,6 +114,23 @@ public class FirstTest {
         }
     }
 
+    @Test
+    public void testSearchFieldPlaceholderTextComparition()
+    {
+        WaitForElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "No element with org.wikipedia:id/search_container id found or unable to click",
+                5
+        );
+
+        assertElementHasText(
+                By.id("search_src_text"),
+                "Search…",
+                "Unexpected search field placeholder"
+        );
+    }
+
+
     private WebElement WaitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message + "\n");
@@ -154,5 +171,17 @@ public class FirstTest {
         return wait.until(
                 ExpectedConditions.invisibilityOfElementLocated(by)
         );
+    }
+
+    private WebElement assertElementHasText(By by, String expected_text, String error_message) {
+
+        WebElement element = WaitForElementPresent(by, error_message, 5);
+        String search_field_text = element.getAttribute("text");
+        Assert.assertEquals(
+                error_message,
+                expected_text,
+                search_field_text
+        );
+        return element;
     }
 }
