@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -33,12 +34,61 @@ public class FirstTest {
         capabilities.setCapability("app", "/Users/e.abramov/JavaAppiumAutomation/apks/org.wikipedia.apk");
 
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+        driver.rotate(ScreenOrientation.PORTRAIT);
+
 
     }
 
     @After
     public void tearDown() {
         driver.quit();
+    }
+
+    @Test
+    public void testChangeScreenOrientationOnScreenResults()
+    {
+        String textToSearch = "Java";
+
+        WaitForElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "No element with org.wikipedia:id/search_container id found or unable to click",
+                5
+        );
+
+        WaitForElementAndSendKeys(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Can not find or send keys to element with org.wikipedia:id/search_src_text id or sendKeys " + textToSearch,
+                5,
+                textToSearch
+        );
+
+        WaitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "No element with org.wikipedia:id/page_list_item_container resource-id found or unable to click",
+                15
+        );
+
+        String titleBeforeRotation = WaitForElementAndGetAttribute (
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "text",
+                "Cannot find article title",
+                5
+        );
+
+        driver.rotate(ScreenOrientation.LANDSCAPE);
+
+        String titleAfterRotation = WaitForElementAndGetAttribute (
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "text",
+                "Cannot find article title",
+                5
+        );
+
+        Assert.assertEquals(
+                "Titles text has been changed after rotation",
+                "Title for test to fail",
+                titleAfterRotation
+        );
     }
 
     @Test
@@ -426,5 +476,11 @@ public class FirstTest {
             isTrue = false;
         }
         Assert.assertTrue(error_message, isTrue);
+    }
+
+    private String WaitForElementAndGetAttribute (By by, String attribute, String error_message, long timeoutInSeconds)
+    {
+        WebElement element = WaitForElementPresent(by, error_message, timeoutInSeconds);
+        return element.getAttribute(attribute);
     }
 }
