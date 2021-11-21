@@ -6,8 +6,8 @@ import org.openqa.selenium.By;
 public class MyListsPageObject extends MainPageObject {
 
     private static final String
-            FOLDER_BY_NAME_TPL = "//*[@text='{FOLDER_NAME}']",
-            ARTICLE_BY_TITLE_TPL = "//*[@text='{TITLE}']";
+            FOLDER_BY_NAME_TPL = "xpath://*[@text='{FOLDER_NAME}']",
+            ARTICLE_BY_TITLE_TPL = "xpath://*[@text='{TITLE}']";
 
     public MyListsPageObject (AppiumDriver driver)
     {
@@ -30,12 +30,12 @@ public class MyListsPageObject extends MainPageObject {
     {
         String folder_name_xpath = addFolderName(name_of_folder);
         this.WaitForElementBeingActive(
-                By.xpath(folder_name_xpath),
+                folder_name_xpath,
                 "Cannot find folder by name"
         );
 
         this.WaitForElementAndClick(
-                By.xpath(folder_name_xpath),
+                folder_name_xpath,
                 "Can not click folder by name",
                 5
         );
@@ -45,12 +45,12 @@ public class MyListsPageObject extends MainPageObject {
     {
         String article_xpath = getSavedArticleByXpath(articleTitle);
         this.WaitForElementBeingActive(
-                By.xpath(article_xpath),
+                article_xpath,
                 "Could not wait for article to be active"
         );
 
         this.SwipeElementToTheLeft(
-                By.xpath(article_xpath),
+                article_xpath,
                 "Cannot swipe article"
         );
     }
@@ -59,11 +59,11 @@ public class MyListsPageObject extends MainPageObject {
     {
         String article_xpath = getSavedArticleByXpath(articleTitle);
         this.WaitForElementBeingActive(
-                By.xpath(article_xpath),
+                article_xpath,
                 "Could not wait for article to be active"
         );
         this.WaitForElementAndClick(
-                By.xpath(article_xpath),
+                article_xpath,
                 "No element with " + article_xpath + " found or unable to click",
                 5
         );
