@@ -2,12 +2,18 @@ package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
+import lib.Platform;
+import java.awt.*;
 
-public class MyListsPageObject extends MainPageObject {
 
-    private static final String
-            FOLDER_BY_NAME_TPL = "xpath://*[@text='{FOLDER_NAME}']",
-            ARTICLE_BY_TITLE_TPL = "xpath://*[@text='{TITLE}']";
+abstract public class MyListsPageObject extends MainPageObject {
+
+    protected static String
+            FOLDER_BY_NAME_TPL,
+            ARTICLE_BY_TITLE_TPL,
+            POPUP_CLOSE_BUTTON,
+            POPUP_TITLE,
+            SWIPE_TRASH_BUTTON;
 
     public MyListsPageObject (AppiumDriver driver)
     {
@@ -44,28 +50,37 @@ public class MyListsPageObject extends MainPageObject {
     public void swipeByArticleToDelete(String articleTitle)
     {
         String article_xpath = getSavedArticleByXpath(articleTitle);
-        this.WaitForElementBeingActive(
-                article_xpath,
-                "Could not wait for article to be active"
-        );
+
 
         this.SwipeElementToTheLeft(
                 article_xpath,
                 "Cannot swipe article"
         );
+
+        if (Platform.getInstance().isIOS())
+        {
+            this.WaitForElementAndClick(SWIPE_TRASH_BUTTON, "Cannot trash article", 5);
+        }
     }
 
     public void openArticle(String articleTitle)
     {
         String article_xpath = getSavedArticleByXpath(articleTitle);
-        this.WaitForElementBeingActive(
-                article_xpath,
-                "Could not wait for article to be active"
-        );
+        if (Platform.getInstance().isAndroid())
+        {
+            this.WaitForElementBeingActive(
+                    article_xpath,
+                    "Could not wait for article to be active"
+            );
+        }
         this.WaitForElementAndClick(
                 article_xpath,
                 "No element with " + article_xpath + " found or unable to click",
                 5
         );
+    }
+
+    public void closeSyncPopup(){
+        this.WaitForElementAndClick(POPUP_CLOSE_BUTTON, "Cannot press sync popup close button", 5);
     }
 }

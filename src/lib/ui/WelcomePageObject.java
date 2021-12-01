@@ -21,9 +21,8 @@ public class WelcomePageObject extends MainPageObject {
         this.WaitForElementPresent(WELCOME_TEXT_XPATH, "Cannot find '" + SKIP_BUTTON_XPATH + "' text", 5);
     }
 
-    public void skipWelcome()
+    public void clickSkip()
     {
         this.WaitForElementAndClick(SKIP_BUTTON_XPATH, "Cannot click skip button", 5);
-        this.WaitForElementPresent("xpath://XCUIElementTypeStaticText[@name=\"Today\"]\n", "Cannot find Today", 15);
     }
 }

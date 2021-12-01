@@ -4,18 +4,21 @@ import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import sun.jvm.hotspot.utilities.Assert;
+import lib.Platform;
+import java.util.concurrent.TimeUnit;
 
-public class ArticlePageObject extends MainPageObject {
-    private static final String
-            TITLE_ID = "id:org.wikipedia:id/view_page_title_text",
-            OPTIONS_BUTTON = "xpath://*[@content-desc='More options']",
-            OPTIONS_ADD_TO_MY_LIST_BUTTON_ID = "id:org.wikipedia:id/title",
-            OPTIONS_ADD_TO_MY_LIST_BUTTON_TEXT = "xpath://*[@text='Add to reading list']",
-            ADD_TO_MY_LIST_OVERLAY_ID = "id:org.wikipedia:id/onboarding_button",
-            MY_LIST_NAME_INPUT = "id:org.wikipedia:id/text_input",
-            MY_LIST_OK_BUTTON_TEXT = "xpath://*[@text='OK']",
-            CLOSE_ARTICLE_BUTTON = "xpath://*[@content-desc='Navigate up']",
-            FOLDER_NAME_TPL = "xpath://*[@text='{SUBSTRING}']";
+abstract public class ArticlePageObject extends MainPageObject {
+    protected static String
+            TITLE_ID,
+            OPTIONS_BUTTON,
+            OPTIONS_ADD_TO_MY_LIST_BUTTON_ID,
+            OPTIONS_ADD_TO_MY_LIST_BUTTON_TEXT,
+            ADD_TO_MY_LIST_OVERLAY_ID,
+            MY_LIST_NAME_INPUT,
+            MY_LIST_OK_BUTTON_TEXT,
+            CLOSE_ARTICLE_BUTTON,
+            FOLDER_NAME_TPL,
+            FOOTER_ELEMENT;
 
 
     public ArticlePageObject(AppiumDriver driver)
@@ -38,10 +41,14 @@ public class ArticlePageObject extends MainPageObject {
     public String getArticleTitle()
     {
         WebElement title_element = waitForTitleElement();
-        return title_element.getAttribute("text");
-    }
+        if(Platform.getInstance().isAndroid()) {
+            return title_element.getAttribute("text");
+        } else
+        {
+            return title_element.getAttribute("name");
+        }    }
 
-    public void addArticleToMyListFisrtTime(String name_of_folder)
+    public void addArticleToMyListFirstTime(String name_of_folder)
     {
         this.WaitForElementAndClick(
                 OPTIONS_BUTTON,
@@ -129,5 +136,10 @@ public class ArticlePageObject extends MainPageObject {
                 TITLE_ID,
                 "No article title found"
         );
+    }
+
+    public void addArticlesToSaved()
+    {
+        this.WaitForElementAndClick(OPTIONS_ADD_TO_MY_LIST_BUTTON_ID, "Cannot find save button", 5);
     }
 }
